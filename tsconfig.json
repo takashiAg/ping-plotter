@@ -70,7 +70,8 @@
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
   },
   "files": [
-    "src/main.tsx"
+    "src/main.tsx",
+    "src/preload.tsx"
     // "src/**/*.tsx"
   ]
 }

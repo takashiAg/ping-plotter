@@ -6,5 +6,17 @@
   </head>
   <body>
     <div id="contents"></div>
+
+    <script>
+      window.addEventListener('load', () => {
+        window.api.receive('fromMain', data => {
+          console.log(`Received ${data} from main process`);
+        });
+        window.api.receive('pingdata', data => {
+          console.log(data);
+        });
+        window.api.send('toMain', 'some data');
+      });
+    </script>
   </body>
 </html>

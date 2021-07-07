@@ -8,6 +8,11 @@ interface DB {
   database: any;
 }
 
+export interface IfindOption {
+  sortKey: string;
+  sortOrder: -1 | 1;
+  limit: number;
+}
 export default class Database {
   database: DB[] = [];
 
@@ -39,12 +44,19 @@ export default class Database {
     });
   }
 
-  find(databaseName: string, query: any) {
+  find(
+    databaseName: string,
+    query: any,
+    { sortKey = 'createdAt', sortOrder = 1, limit = 100 }: IfindOption,
+  ) {
+    const sortOption: any = {};
+    sortOption[sortKey] = sortOrder;
     return new Promise((resolve, reject) => {
       const db = this.getDB(databaseName);
       db.database
         .find(query)
-        .sort({ createdAt: 1 })
+        .sort({ ...sortOption })
+        .limit(limit)
         .exec((err: any, docs: any) => {
           if (err) reject(err);
           resolve(docs);
