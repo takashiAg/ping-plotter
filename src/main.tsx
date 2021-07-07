@@ -1,11 +1,20 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
+import Database from './database';
 
-// セキュアな Electron の構成
-// 参考: https://qiita.com/pochman/items/64b34e9827866664d436
+let DB;
+const dataPath = app.getPath('userData');
+const databaseNameLaunchlog = 'launchlog';
+
+app.whenReady().then(async () => {
+  console.log(dataPath);
+  DB = new Database([databaseNameLaunchlog], dataPath);
+  await DB.insert(databaseNameLaunchlog, { time: new Date().getTime() });
+  let data = await DB.find(databaseNameLaunchlog, {});
+  console.log(data);
+});
 
 const createWindow = (): void => {
-  // レンダープロセスとなる、ウィンドウオブジェクトを作成する。
   const win = new BrowserWindow({
     width: 1200,
     height: 600,
@@ -16,30 +25,21 @@ const createWindow = (): void => {
     },
   });
 
-  // 読み込む index.html。
-  // tsc でコンパイルするので、出力先の dist の相対パスで指定する。
   win.loadFile('./index.html');
 
-  // 開発者ツールを起動する
-  win.webContents.openDevTools();
+  // [note] devtoolを開くときは下記のコメントアウトを外す。
+  // win.webContents.openDevTools();
 };
 
-// Electronの起動準備が終わったら、ウィンドウを作成する。
 app.whenReady().then(createWindow);
 
-// すべての ウィンドウ が閉じたときの処理
 app.on('window-all-closed', () => {
-  // macOS 以外では、メインプロセスを停止する
-  // macOS では、ウインドウが閉じてもメインプロセスは停止せず
-  // ドックから再度ウインドウが表示されるようにする。
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
 app.on('activate', () => {
-  // macOS では、ウインドウが閉じてもメインプロセスは停止せず
-  // ドックから再度ウインドウが表示されるようにする。
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
