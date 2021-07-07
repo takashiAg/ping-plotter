@@ -7,6 +7,7 @@ import ping from 'ping';
 let DB: Database;
 let win: any;
 const dataPath = app.getPath('userData');
+console.log(dataPath);
 const databaseNameLaunchlog = 'launchlog';
 const databaseNamePingData = 'pingdata';
 const databaseNameSettings = 'settings';
@@ -55,7 +56,6 @@ ipcMain.on('toMain', (event, args) => {
   win.webContents.send('fromMain', { data: 'test' });
 });
 ipcMain.on('setting', async (event, args) => {
-  console.log(args);
   await DB.insert(databaseNameSettings, {
     interval: 1,
     hosts: ['8.8.8.8'],
@@ -68,7 +68,7 @@ const sleep = (msec: number) =>
 const startProcess = async () => {
   startMainProcess();
   while (true) {
-    await sleep(5000);
+    await sleep(100);
     const findOption: IfindOption = {
       sortKey: 'createdAt',
       sortOrder: -1,
@@ -89,7 +89,7 @@ const startProcess = async () => {
         return DB.find(databaseNamePingData, { host }, findPingOption);
       }),
     );
-    win.webContents.send('pingdata', { hosts, data });
+    win.webContents.send('pingdata', data);
   }
 };
 
